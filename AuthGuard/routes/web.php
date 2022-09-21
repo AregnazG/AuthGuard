@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,4 +18,18 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::controller(AuthController::class)->group(function (){
+
+    Route::get('login', 'index')->name('login');
+    Route::post('post-login', 'postLogin')->name('login.post');
+
+    Route::get('/profile', function () {
+        if (session('lifeTime') + 60 <= Carbon::now()->timestamp) {
+            return redirect()->route('login');
+        }
+        return view('auth.profile');
+    })->name('profile');
+
 });
